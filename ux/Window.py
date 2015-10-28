@@ -5,13 +5,13 @@ from gi.repository import Gtk, Gio
 class Window(Gtk.Window):
     """docstring for HeaderBarWindow"""
     def __init__(self):
-        Gtk.Window.__init__(self, title = "Odin")
+        Gtk.Window.__init__(self, title = "Vman")
         self.set_border_width(2)
         self.set_default_size(500, 200)
 
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
-        #hb.props.title = "Odin"
+        #hb.props.title = "Vman"
         self.set_titlebar(hb)
 
         #######################self.add(Gtk.TextView())
@@ -25,6 +25,7 @@ class Window(Gtk.Window):
         #more info http://lazka.github.io/pgi-docs/Gtk-3.0/enums.html#Gtk.StackTransitionType
         stack.set_transition_type(6)
 
+        self.readBoxes()
         checkbutton = Gtk.CheckButton("I agree...")
         stack.add_titled(checkbutton, "check", "Check Button")
 
@@ -48,3 +49,23 @@ class Window(Gtk.Window):
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         button.add(image)
         hb.pack_end(button)
+
+    """
+    reads the locations of the boxes,
+    returns a list with the locations
+    """
+    def readBoxes(self):
+        #file = open('data/boxes')
+        print "reading file..."
+        with open('data/boxes') as file:
+            content = file.readlines()
+
+        print "processing list of boxes..."
+        boxesList = []
+        for path in content:
+                boxesList.append(path[:-1])
+        print "boxes list is : " + boxesList
+        return boxesList
+        #print file.read()
+
+#Todo: create method to generate the gtk.list objects 
