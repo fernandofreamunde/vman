@@ -25,7 +25,34 @@ class Window(Gtk.Window):
         #more info http://lazka.github.io/pgi-docs/Gtk-3.0/enums.html#Gtk.StackTransitionType
         stack.set_transition_type(6)
 
-        self.readBoxes()
+        listbox = Gtk.ListBox()
+        listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        #hbox.pack_start(listbox, True, True, 0)
+        stack.add_titled(listbox, "VagrantBoxes", "Vagrant Boxes")
+
+        for vagrantbox in self.readBoxes():
+            row = Gtk.ListBoxRow()
+            hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 50)
+
+            label = Gtk.Label()
+            label.set_markup(vagrantbox)
+
+            button1 = Gtk.Button(label="Hello")
+            #self.button1.connect("clicked", self.on_button1_clicked)
+            hbox.pack_end(button1, True, True, 0)
+
+            hbox.add(label)
+            row.add(hbox)
+            listbox.add(row)
+            pass
+
+        row = Gtk.ListBoxRow()
+        hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 50)
+        add_button = Gtk.Button(label="Add Box")
+        hbox.add(add_button)
+        row.add(hbox)
+        listbox.add(row)
+
         checkbutton = Gtk.CheckButton("I agree...")
         stack.add_titled(checkbutton, "check", "Check Button")
 
@@ -64,8 +91,9 @@ class Window(Gtk.Window):
         boxesList = []
         for path in content:
                 boxesList.append(path[:-1])
-        print "boxes list is : " + boxesList
+        print "boxes list is : "
+        print boxesList
         return boxesList
         #print file.read()
 
-#Todo: create method to generate the gtk.list objects 
+#Todo: create method to generate the gtk.list objects
