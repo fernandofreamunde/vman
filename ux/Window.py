@@ -5,13 +5,15 @@ from gi.repository import Gtk, Gio
 class Window(Gtk.Window):
     """docstring for HeaderBarWindow"""
     def __init__(self):
+        #starts the window
         Gtk.Window.__init__(self, title = "Vman")
         self.set_border_width(2)
         self.set_default_size(500, 200)
 
+        #sets the heatherbar
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
-        #hb.props.title = "Vman"
+        hb.props.title = "Vman"
         self.set_titlebar(hb)
 
         #######################self.add(Gtk.TextView())
@@ -32,16 +34,32 @@ class Window(Gtk.Window):
 
         for vagrantbox in self.readBoxes():
             row = Gtk.ListBoxRow()
-            hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 50)
+            hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
 
             label = Gtk.Label()
             label.set_markup(vagrantbox)
 
-            button1 = Gtk.Button(label="Hello")
-            #self.button1.connect("clicked", self.on_button1_clicked)
-            hbox.pack_end(button1, True, True, 0)
+            label2 = Gtk.Label()
+            label2.set_markup('')
+
+            startButton = Gtk.Button(label="Start")
+            startButton.connect("clicked", self.on_startButton_clicked, vagrantbox)
+            hbox.pack_end(startButton, True, True, 0)
+
+            suspendButton = Gtk.Button(label="Stop")
+            suspendButton.connect("clicked", self.on_suspendButton_clicked, vagrantbox)
+            hbox.pack_end(suspendButton, True, True, 0)
+
+            haltButton = Gtk.Button(label="Halt")
+            haltButton.connect("clicked", self.on_haltButton_clicked, vagrantbox)
+            #hbox.pack_end(haltButton, True, True, 0)
+
+            destroyButton = Gtk.Button(label="Destroy")
+            destroyButton.connect("clicked", self.on_destroyButton_clicked, vagrantbox)
+            #hbox.pack_end(destroyButton, True, True, 0)
 
             hbox.add(label)
+            hbox.add(label2)
             row.add(hbox)
             listbox.add(row)
             pass
@@ -49,6 +67,7 @@ class Window(Gtk.Window):
         row = Gtk.ListBoxRow()
         hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 50)
         add_button = Gtk.Button(label="Add Box")
+        add_button.connect("clicked", self.on_addButton_clicked)
         hbox.add(add_button)
         row.add(hbox)
         listbox.add(row)
@@ -62,7 +81,7 @@ class Window(Gtk.Window):
 
         stack_switcher = Gtk.StackSwitcher()
         stack_switcher.set_stack(stack)
-        hb.pack_start(stack_switcher)
+        #hb.pack_start(stack_switcher)
         vbox.pack_start(stack, True, True, 0)
 
         button = Gtk.Button()
@@ -96,4 +115,36 @@ class Window(Gtk.Window):
         return boxesList
         #print file.read()
 
+    def on_startButton_clicked(self, widget, box):
+        print "Start box :" + box
+
+    def on_suspendButton_clicked(self, widget, box):
+        print "Suspend box :" + box
+
+    def on_haltButton_clicked(self, widget, box):
+        print "Halt box :" + box
+
+    def on_destroyButton_clicked(self, widget, box):
+        print "destroy box :" + box
+
+    def on_addButton_clicked(self, widget):
+        dialog = Gtk.FileChooserDialog("Please choose a file", self,
+            Gtk.FileChooserAction.SELECT_FOLDER,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+
+        #self.add_filters(dialog)
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            print("File selected: " + dialog.get_filename())
+            #save value to the data file
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
+
+
+        #gtk_stack_switcher_get_stack(label)
 #Todo: create method to generate the gtk.list objects
