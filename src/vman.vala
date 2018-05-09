@@ -46,33 +46,44 @@ public class MyApp : Gtk.Application {
         layout.row_spacing    = 6;
         layout.column_spacing = 6;
 
-        var hello_button = new Gtk.Button.with_label( _("Click me!"));
-        var hello_label = new Gtk.Label(null);
+        var box_location_label = new Gtk.Label("Location");
+        var box_status_label   = new Gtk.Label("Status");
+        var box_provider_label = new Gtk.Label("Providor");
+        var box_actions_label  = new Gtk.Label("Actions");
 
-        var rotate_button = new Gtk.Button.with_label( _("Rotate!"));
-        var rotate_label = new Gtk.Label( _("Horizontal") );
+        layout.attach(box_location_label, 0,0,1,1);
+        layout.attach(box_status_label,   1,0,1,1);
+        layout.attach(box_provider_label, 2,0,1,1);
+        layout.attach(box_actions_label,  3,0,5,1);
 
-        //layout.add(button);
-        //layout.add(label);
-
-        layout.attach(hello_button, 1,1,1,1);
-        layout.attach_next_to(hello_label, hello_button, Gtk.PositionType.RIGHT, 1, 1);
-
-        layout.attach(rotate_button, 1,2,1,1);
-        layout.attach_next_to(rotate_label, rotate_button, Gtk.PositionType.RIGHT, 1, 1);
-
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //var hello_button = new Gtk.Button.with_label( _("Click me!"));
+        //var hello_label = new Gtk.Label(null);
+        //
+        //var rotate_button = new Gtk.Button.with_label( _("Rotate!"));
+        //var rotate_label = new Gtk.Label( _("Horizontal") );
+        //
+        //
+        ////layout.add(button);
+        //layout.attach(hello_button, 1,1,1,1);
+        ////layout.add(label);
+        //layout.attach_next_to(hello_label, hello_button, Gtk.PositionType.RIGHT, 1, 1);
+        //
+        //layout.attach(rotate_button, 1,2,1,1);
+        //layout.attach_next_to(rotate_label, rotate_button, Gtk.PositionType.RIGHT, 1, 1);
+        ///////////////////////////////////////////////////////////////////////////////////////
         main_window.add(layout);
 
-        hello_button.clicked.connect(() => {
-            hello_label.label = newLabel(hello_label.label);
-            //button.sensitive = false;
-        });
+        //hello_button.clicked.connect(() => {
+        //    hello_label.label = newLabel(hello_label.label);
+        //    //button.sensitive = false;
+        //});
 
-        rotate_button.clicked.connect (() => {
-            rotate_label.angle = 90;
-            rotate_label.label = _("Vertical");
-            rotate_button.sensitive = false;
-        });
+        //rotate_button.clicked.connect (() => {
+        //    rotate_label.angle = 90;
+        //    rotate_label.label = _("Vertical");
+        //    rotate_button.sensitive = false;
+        //});
 
         main_window.show_all();
     }
