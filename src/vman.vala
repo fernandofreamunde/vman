@@ -43,8 +43,8 @@ public class MyApp : Gtk.Application {
 
         var layout = new Gtk.Grid();
         layout.orientation    = Gtk.Orientation.VERTICAL;
-        layout.row_spacing    = 6;
-        layout.column_spacing = 6;
+        layout.row_spacing    = 60;
+        layout.column_spacing = 60;
 
         var box_location_label = new Gtk.Label("Location");
         var box_status_label   = new Gtk.Label("Status");
@@ -95,6 +95,58 @@ public class MyApp : Gtk.Application {
         else{
             return _("Hello I'm Vman");
         }
+    }
+    
+    private static string getVagrantBoxes() {
+        
+        try {
+		    Process.spawn_command_line_sync ("vagrant global-status | grep $HOME",
+									out ls_stdout,
+									out ls_stderr,
+									out ls_status);
+
+		    // Output: <File list>
+		    //stdout.printf ("stdout:\n");
+		    // Output: ````
+		    //stdout.puts (ls_stdout);
+		    //stdout.printf ("stderr:\n");
+		    //stdout.puts (ls_stderr);
+		    // Output: ``0``
+		    //stdout.printf ("status: %d\n", ls_status);
+	    } catch (SpawnError e) {
+		    stdout.printf ("Error: %s\n", e.message);
+	    }
+	    
+	    try {
+		    
+		    Regex regex = /([\w,\d]{7})\s\s(\w*)\s(\w*)\s\s?(\w*)\s\s?(\/home\/[\w,\S]*)/;
+
+		    if (regex.match (ls_stdout)){
+			    MatchInfo match_info;
+
+			    regex.match_full (ls_stdout, -1, 0, 0, out match_info);
+
+			    stdout.printf((match_info.get_match_count()).to_string() + "\n");
+			
+			    while (match_info.matches()){
+				
+				    string[] boxInfo = match_info.fetch_all();
+				    stdout.printf( boxInfo[0] + "\n" );
+				    stdout.printf( boxInfo[1] + "\n" );
+				    stdout.printf( boxInfo[2] + "\n" );
+				    stdout.printf( boxInfo[3] + "\n" );
+				    stdout.printf( boxInfo[4] + "\n" );
+				    stdout.printf( boxInfo[5] + "\n" );
+
+				    match_info.next();
+			    }
+
+		    }
+		    
+	    } catch (RegexError e) {
+		    stdout.printf ("Error %s\n", e.message);
+	    }
+
     }
 
     public static int main (string[] args){
