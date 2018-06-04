@@ -56,6 +56,7 @@ public class MyApp : Gtk.Application {
         layout.attach(box_provider_label, 2,0,1,1);
         layout.attach(box_actions_label,  3,0,5,1);
 
+        getVagrantBoxes();
         ///////////////////////////////////////////////////////////////////////////////////////
         //var hello_button = new Gtk.Button.with_label( _("Click me!"));
         //var hello_label = new Gtk.Label(null);
@@ -96,9 +97,13 @@ public class MyApp : Gtk.Application {
             return _("Hello I'm Vman");
         }
     }
-    
-    private static string getVagrantBoxes() {
-        
+
+    private static string[] getVagrantBoxes() {
+        string ls_stdout;
+	    string ls_stderr;
+	    int ls_status;
+	    string[] boxes = {};
+
         try {
 		    Process.spawn_command_line_sync ("vagrant global-status | grep $HOME",
 									out ls_stdout,
@@ -116,9 +121,9 @@ public class MyApp : Gtk.Application {
 	    } catch (SpawnError e) {
 		    stdout.printf ("Error: %s\n", e.message);
 	    }
-	    
+
 	    try {
-		    
+
 		    Regex regex = /([\w,\d]{7})\s\s(\w*)\s(\w*)\s\s?(\w*)\s\s?(\/home\/[\w,\S]*)/;
 
 		    if (regex.match (ls_stdout)){
@@ -126,31 +131,45 @@ public class MyApp : Gtk.Application {
 
 			    regex.match_full (ls_stdout, -1, 0, 0, out match_info);
 
-			    stdout.printf((match_info.get_match_count()).to_string() + "\n");
-			
+			    //stdout.printf((match_info.get_match_count()).to_string() + "\n");
+                
 			    while (match_info.matches()){
-				
+                    
 				    string[] boxInfo = match_info.fetch_all();
-				    stdout.printf( boxInfo[0] + "\n" );
-				    stdout.printf( boxInfo[1] + "\n" );
-				    stdout.printf( boxInfo[2] + "\n" );
-				    stdout.printf( boxInfo[3] + "\n" );
-				    stdout.printf( boxInfo[4] + "\n" );
-				    stdout.printf( boxInfo[5] + "\n" );
+				    
+				    //boxes +=boxInfo; //array_concat(boxes, boxInfo);
+				    boxes += { boxInfo[1], boxInfo[2], boxInfo[3], boxInfo[4], boxInfo[5]};
+				    
+				    stdout.printf( boxInfo[0] + "\n" ); //full line
+				    stdout.printf( boxInfo[1] + "\n" ); // id
+				    stdout.printf( boxInfo[2] + "\n" ); // name
+				    stdout.printf( boxInfo[3] + "\n" ); // provider
+				    stdout.printf( boxInfo[4] + "\n" ); // status
+				    stdout.printf( boxInfo[5] + "\n" ); // location
+				    stdout.printf( "...\n" );
 
 				    match_info.next();
 			    }
-
+                
+                //stdout.printf( boxes[1][1] );
 		    }
-		    
+
 	    } catch (RegexError e) {
 		    stdout.printf ("Error %s\n", e.message);
 	    }
 
+	    return boxes;
     }
 
     public static int main (string[] args){
         var app = new MyApp();
         return app.run(args);
     }
+}
+
+string[] array_concat(string[]a,string[]b){	
+	string[] c = new string[a.length + b.length];
+	Memory.copy(c, a, a.length * sizeof(int));
+	Memory.copy(&c[a.length], b, b.length * sizeof(int));
+	return c;
 }
