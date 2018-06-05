@@ -89,21 +89,20 @@ public class MyApp : Gtk.Application {
         main_window.show_all();
     }
 
-    private static string newLabel(string currntLabel) {
-        if (currntLabel == _("Hello I'm Vman")) {
-            return _("Hello I'm Vman again!");
-        }
-        else{
-            return _("Hello I'm Vman");
-        }
-    }
+    //private static string newLabel(string currntLabel) {
+    //    if (currntLabel == _("Hello I'm Vman")) {
+    //        return _("Hello I'm Vman again!");
+    //    }
+    //    else{
+    //        return _("Hello I'm Vman");
+    //    }
+    //}
 
-    private static string[] getVagrantBoxes() {
+    private static VagrantBox[] getVagrantBoxes() {
         string ls_stdout;
 	    string ls_stderr;
 	    int ls_status;
-	    string[] boxes = {};
-
+        
         try {
 		    Process.spawn_command_line_sync ("vagrant global-status | grep $HOME",
 									out ls_stdout,
@@ -122,6 +121,7 @@ public class MyApp : Gtk.Application {
 		    stdout.printf ("Error: %s\n", e.message);
 	    }
 
+        VagrantBox[] boxes;
 	    try {
 
 		    Regex regex = /([\w,\d]{7})\s\s(\w*)\s(\w*)\s\s?(\w*)\s\s?(\/home\/[\w,\S]*)/;
@@ -132,14 +132,28 @@ public class MyApp : Gtk.Application {
 			    regex.match_full (ls_stdout, -1, 0, 0, out match_info);
 
 			    //stdout.printf((match_info.get_match_count()).to_string() + "\n");
-                
+			    
+			    
+                int iterator = 0;
 			    while (match_info.matches()){
-                    
+
 				    string[] boxInfo = match_info.fetch_all();
+				    //string[] box;
+
+
+				    //addBox(boxInfo) ; //array_concat(boxes, boxInfo);
+				    //boxes[0,iterator] = box;
+				    //{ boxInfo[1], boxInfo[2], boxInfo[3], boxInfo[4], boxInfo[5]};
 				    
-				    //boxes +=boxInfo; //array_concat(boxes, boxInfo);
-				    boxes += { boxInfo[1], boxInfo[2], boxInfo[3], boxInfo[4], boxInfo[5]};
-				    
+				    var newbox      = new VagrantBox();
+                    newbox.id       = boxInfo[1];
+                    newbox.name     = boxInfo[2];
+                    newbox.provider = boxInfo[3];
+                    newbox.status   = boxInfo[4];
+                    newbox.location = boxInfo[5];
+                    
+                    boxes += newbox;
+
 				    stdout.printf( boxInfo[0] + "\n" ); //full line
 				    stdout.printf( boxInfo[1] + "\n" ); // id
 				    stdout.printf( boxInfo[2] + "\n" ); // name
@@ -149,9 +163,9 @@ public class MyApp : Gtk.Application {
 				    stdout.printf( "...\n" );
 
 				    match_info.next();
+				    iterator++;
 			    }
                 
-                //stdout.printf( boxes[1][1] );
 		    }
 
 	    } catch (RegexError e) {
@@ -167,9 +181,37 @@ public class MyApp : Gtk.Application {
     }
 }
 
-string[] array_concat(string[]a,string[]b){	
-	string[] c = new string[a.length + b.length];
-	Memory.copy(c, a, a.length * sizeof(int));
-	Memory.copy(&c[a.length], b, b.length * sizeof(int));
-	return c;
+class VagrantBox {
+    
+    private string _id;
+    private string _name;
+    private string _provider;
+    private string _status;
+    private string _location;
+
+    public string id {
+        get { return _id; }
+        set { _id = value; }
+    }
+    
+    public string name {
+        get { return _name; }
+        set { _name = value; }
+    }
+    
+    public string provider {
+        get { return _provider; }
+        set { _provider = value; }
+    }
+    
+    public string status {
+        get { return _status; }
+        set { _status = value; }
+    }
+    
+    public string location {
+        get { return _location; }
+        set { _location = value; }
+    }
 }
+
