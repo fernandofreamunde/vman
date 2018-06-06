@@ -88,6 +88,50 @@ public class MyApp : Gtk.Application {
             var dele_action_button = new Gtk.Button.with_label( _("Delete"));
             var indi_action_button = new Gtk.Button.with_label( _("Indicator"));
 
+            play_action_button.clicked.connect(() => {
+                box.playPauseAction();
+
+                if(box.status != "running") {
+                    play_action_button.label = _("Play");
+                    existing_box_status_label.label = "saved";
+
+                }else {
+                    play_action_button.label = _("Pause");
+                    existing_box_status_label.label = "running";
+                }
+                //button.sensitive = false;
+            });
+            
+            stop_action_button.clicked.connect(() => {
+                play_action_button.label = _("Play");
+                existing_box_status_label.label = "poweroff";
+                
+                box.stopAction();
+                //button.sensitive = false;
+            });
+            
+            prov_action_button.clicked.connect(() => {
+                box.provisionAction();
+                //button.sensitive = false;
+            });
+            
+            sshb_action_button.clicked.connect(() => {
+                box.sshAction();
+                //button.sensitive = false;
+            });                          
+            
+            dest_action_button.clicked.connect(() => {
+                box.destroyAction();         
+            });
+            
+            dele_action_button.clicked.connect(() => {
+                box.deleteAction();         
+            });
+            
+            indi_action_button.clicked.connect(() => {
+                box.indicatorAction();
+            });
+
             layout.attach(play_action_button, 4,iterator,1,1);
             layout.attach(stop_action_button, 5,iterator,1,1);
             layout.attach(prov_action_button, 6,iterator,1,1);
@@ -239,6 +283,84 @@ class VagrantBox {
     public string location {
         get { return _location; }
         set { _location = value; }
+    }
+
+    public void playPauseAction() {
+        var action = "up";
+
+        if (_status == "running") {
+            _status = "poeredoff";
+            action = "suspend";
+        } else {
+            _status = "saved";
+        }
+
+        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        runAction(action);
+    }
+    
+    public void stopAction() {
+        var action = "halt";
+        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        runAction(action);
+    }
+    
+    public void provisionAction() {
+        var action = "provision";
+        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        runAction(action);
+    }
+    
+    public void sshAction() {
+        //var action = "ssh";
+        //stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        //runAction(action);
+    }
+    
+    public void destroyAction() {
+        //var action = "destroy";
+        //stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        //runAction(action);
+    }
+    
+    public void deleteAction() {
+        //var action = "halt";
+        //stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        //runAction(action);
+    }
+    
+    public void indicatorAction() {
+        //var action = "halt";
+        //stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+
+        //runAction(action);
+    }
+
+    private void runAction(string action) {
+
+        string[] argv = {"vagrant", action, _id};
+        string[] envv = Environ.get();
+        int child_pid;
+        int child_stdin_fd;
+        int child_stdout_fd;
+        int child_stderr_fd;
+
+        Process.spawn_async_with_pipes(
+            ".",
+            argv,
+            envv,
+            SpawnFlags.SEARCH_PATH,
+            null,
+            out child_pid,
+            out child_stdin_fd,
+            out child_stdout_fd,
+            out child_stderr_fd);
     }
 }
 
