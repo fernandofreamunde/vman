@@ -46,10 +46,10 @@ public class MyApp : Gtk.Application {
         layout.row_spacing    = 10;
         layout.column_spacing = 10;
 
-        var box_location_label = new Gtk.Label("Location");
-        var box_status_label   = new Gtk.Label("Status");
-        var box_provider_label = new Gtk.Label("Provider");
-        var box_actions_label  = new Gtk.Label("Actions");
+        var box_location_label = new Gtk.Label(_("Location"));
+        var box_status_label   = new Gtk.Label(_("Status"));
+        var box_provider_label = new Gtk.Label(_("Provider"));
+        var box_actions_label  = new Gtk.Label(_("Actions"));
 
         layout.attach(box_location_label, 0,0,1,1);
         layout.attach(box_status_label,   1,0,1,1);
