@@ -66,11 +66,8 @@ public class MyApp : Gtk.Application {
         int iterator = 1;
         foreach (VagrantBox box in boxes){
             var existing_box_location_label = new Gtk.Label(box.location);
-            // running : user-available
-            // saved   : user-offline
-            // poweroff: user-busy
-            
-            var existing_box_status_label   = new Gtk.Image.from_icon_name ("user-offline", Gtk.IconSize.SMALL_TOOLBAR);//new Gtk.Label(box.status);
+
+            var existing_box_status_label   = box.getStatus;
             var existing_box_provider_label = new Gtk.Image.from_icon_name (box.provider, Gtk.IconSize.SMALL_TOOLBAR);//new Gtk.Label(box.provider);
             //var existing_box_actions_label  = new Gtk.Label("Actions");
 
@@ -271,6 +268,8 @@ class VagrantBox {
     private string _provider;
     private string _status;
     private string _location;
+    
+    private string[] _possible_status = {"running", "saved", "poweroff"};
 
     public string id {
         get { return _id; }
@@ -311,6 +310,18 @@ class VagrantBox {
 
         runAction(action);
     }
+    
+    public void getStatus() {
+        if (_status == "saved"){}
+        
+        if (_status == "poweroff"){}
+        
+        if (_status == "running"){}
+        
+        image = new Gtk.Image.from_icon_name ("user-offline", Gtk.IconSize.SMALL_TOOLBAR);
+        image.set_tooltip_text(_("box is <state>"));
+       return image
+    }
 
     public void stopAction() {
         var action = "halt";
@@ -337,7 +348,7 @@ class VagrantBox {
         //var action = "destroy";
         //stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
-        //runAction(action);
+        //runAction(action, true);
     }
 
     public void deleteAction() {
@@ -354,9 +365,14 @@ class VagrantBox {
         //runAction(action);
     }
 
-    private void runAction(string action) {
+    private void runAction(string action, bool force = false) {
 
         string[] argv = {"vagrant", action, _id};
+
+        if (force) {
+            string[] argv = {"vagrant", action, _id, "-y"};
+        }
+
         string[] envv = Environ.get();
         int child_pid;
         int child_stdin_fd;
