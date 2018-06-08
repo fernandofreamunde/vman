@@ -87,36 +87,36 @@ public class MyApp : Gtk.Application {
 
     private static VagrantBox[] getVagrantBoxes() {
         string ls_stdout;
-	    string ls_stderr;
-	    int ls_status;
+        string ls_stderr;
+        int ls_status;
 
         try {
-		    Process.spawn_command_line_sync ("vagrant global-status | grep $HOME",
-									out ls_stdout,
-									out ls_stderr,
-									out ls_status);
-	    } catch (SpawnError e) {
-		    stdout.printf ("Error: %s\n", e.message);
-	    }
+            Process.spawn_command_line_sync ("vagrant global-status | grep $HOME",
+                                    out ls_stdout,
+                                    out ls_stderr,
+                                    out ls_status);
+        } catch (SpawnError e) {
+            warning ("Error: %s\n", e.message);
+        }
 
         VagrantBox[] boxes = {};
-	    try {
+        try {
 
-		    Regex regex = /([\w,\d]{7})\s\s(\w*)\s(\w*)\s\s?(\w*)\s\s?(\/home\/[\w,\S]*)/;
+            Regex regex = /([\w,\d]{7})\s\s(\w*)\s(\w*)\s\s?(\w*)\s\s?(\/home\/[\w,\S]*)/;
 
-		    if (regex.match (ls_stdout)){
-			    MatchInfo match_info;
+            if (regex.match (ls_stdout)){
+                MatchInfo match_info;
 
-			    regex.match_full (ls_stdout, -1, 0, 0, out match_info);
+                regex.match_full (ls_stdout, -1, 0, 0, out match_info);
 
-			    //stdout.printf((match_info.get_match_count()).to_string() + "\n");
+                //stdout.printf((match_info.get_match_count()).to_string() + "\n");
 
-			    while (match_info.matches()){
+                while (match_info.matches()){
 
-				    string[] boxInfo = match_info.fetch_all();
-				    //string[] box;
+                    string[] boxInfo = match_info.fetch_all();
+                    //string[] box;
 
-				    var newbox      = new VagrantBox();
+                    var newbox      = new VagrantBox();
                     newbox.id       = boxInfo[1];
                     newbox.name     = boxInfo[2];
                     newbox.provider = boxInfo[3];
@@ -125,16 +125,16 @@ public class MyApp : Gtk.Application {
 
                     boxes += newbox;
 
-				    match_info.next();
-			    }
+                    match_info.next();
+                }
 
-		    }
+            }
 
-	    } catch (RegexError e) {
-		    stdout.printf ("Error %s\n", e.message);
-	    }
+        } catch (RegexError e) {
+            warning ("Error %s\n", e.message);
+        }
 
-	    return boxes;
+        return boxes;
     }
 
     public static int main (string[] args){
@@ -186,7 +186,7 @@ class VagrantBox {
             _status = "running";
         }
 
-        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+        info("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
         runAction(action);
     }
@@ -289,7 +289,7 @@ class VagrantBox {
         // save to config file.
 
         indi_action_button.notify["active"].connect (() => {
-	        indicatorAction();
+            indicatorAction();
         });
 
         return indi_action_button;
@@ -342,21 +342,21 @@ class VagrantBox {
 
     public void stopAction() {
         var action = "halt";
-        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+        info("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
         runAction(action);
     }
 
     public void provisionAction() {
         var action = "provision";
-        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+        info("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
         runAction(action);
     }
 
     public void sshAction() {
         //var action = "ssh";
-        stdout.printf("the box %s will run the command: vagrant ssh %s \n", _id, _id);
+        info("the box %s will run the command: vagrant ssh %s \n", _id, _id);
 
         string command = "pantheon-terminal -e 'vagrant ssh " + _id + "'";
 
@@ -365,20 +365,20 @@ class VagrantBox {
 
     public void destroyAction() {
         var action = "destroy";
-        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+        info("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
         runAction(action, true);
     }
 
     public void deleteAction() {
         var action = "delete";
-        stdout.printf("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
+        info("the box %s will run the command: vagrant %s %s \n", _id, action, _id);
 
         runAction(action, true);
     }
 
     public void indicatorAction() {
-        stdout.printf("Should create an indicator for the box %s \n", _id);
+        info("Should create an indicator for the box %s \n", _id);
     }
 
     private void runAction(string action, bool force = false) {
